@@ -378,7 +378,14 @@ $endif$
 \title{\vspace{50mm} \huge Standard Code Library \\[20pt]}
 \author{写给AYAKA的十四行诗 \\[10pt] 浙江经贸职业技术学院}
 \date{April 13, 2024}
-
+\usepackage{graphicx}
+\graphicspath{{Figures/}{logo/}} 
+\begin{document}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{1.jpg}
+    \end{figure} 
+\end{document} 
 
 \begin{document}
 $if(title)$
