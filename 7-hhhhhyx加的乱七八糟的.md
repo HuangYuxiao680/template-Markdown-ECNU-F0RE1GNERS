@@ -90,6 +90,14 @@ vector<int> add(vector<int> &A, vector<int> &B){
 + 高精度减法
 
 ```cpp
+//判断是否有A>=B
+bool cmp(vector<int> &A,vector<int> &B)
+{
+    if(A.size()!=B.size()) retrun A.size()>B.size();
+    for(int i=A.size()-1;i>=0;i--)
+        if(A[i]!=B[i]) return A[i]>B[i];
+    return true;
+}
 // C = A - B, 满足A >= B, A >= 0, B >= 0
 vector<int> sub(vector<int> &A, vector<int> &B){
     vector<int> C;
@@ -100,6 +108,48 @@ vector<int> sub(vector<int> &A, vector<int> &B){
         if (t < 0) t = 1;
         else t = 0;
     }
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+    return C;
+}
+```
+
++ 高精度乘低精度
+
+```cpp
+// C = A * b, A >= 0, b >= 0
+vector<int> mul(vector<int> &A, int b)
+{
+    vector<int> C;
+
+    int t = 0;
+    for (int i = 0; i < A.size() || t; i ++ )
+    {
+        if (i < A.size()) t += A[i] * b;
+        C.push_back(t % 10);
+        t /= 10;
+    }
+
+    while (C.size() > 1 && C.back() == 0) C.pop_back();
+
+    return C;
+}
+```
+
++ 高精度除以低精度
+
+```cpp
+// A / b = C ... r, A >= 0, b > 0
+vector<int> div(vector<int> &A, int b, int &r)
+{
+    vector<int> C;
+    r = 0;
+    for (int i = A.size() - 1; i >= 0; i -- )
+    {
+        r = r * 10 + A[i];
+        C.push_back(r / b);
+        r %= b;
+    }
+    reverse(C.begin(), C.end());
     while (C.size() > 1 && C.back() == 0) C.pop_back();
     return C;
 }
@@ -116,5 +166,156 @@ int qpow(int a,int b,int mod){
 		b>>=1;
 	}
 	return ans;
+}
+```
+
+## vscode配置
+
++ tasks.json
+
+```cpp
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++",
+            "command": "C:/MinGW/mingw64/bin/g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/bin/${fileBasenameNoExtension}.exe",
+                "-fexec-charset=GBK"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe 生成活动文件",
+            "command": "C:/MinGW/mingw64/bin/g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:/MinGW/mingw64/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "调试器生成的任务。"
+        }
+    ],
+    "version": "2.0.0"
+}
+```
+
++ c_cpp_properties.json
+
+```cpp
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22000.0",
+            "compilerPath": "C:/MinGW/mingw64/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}
+```
+
++ launch.json
+
+```cpp
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "preLaunchTask": "C/C++",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/bin/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/MinGW/mingw64/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "C/C++: g++.exe 生成和调试活动文件",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "C:/MinGW/mingw64/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/MinGW/mingw64/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "将反汇编风格设置为 Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: g++.exe 生成活动文件"
+        },
+        {
+            "name": "(Windows) 启动",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "输入程序名称，例如 ${workspaceFolder}/a.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
+        }
+    ]
 }
 ```
